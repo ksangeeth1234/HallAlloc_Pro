@@ -1,0 +1,17 @@
+{
+  "name": "lecture-hall-allocation-reporting-system",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Web-based replacement for the Excel Hall Availability reporting workflow.",
+  "scripts": {
+    "dev": "npx http-server public -p 3000",
+    "start": "npx http-server public -p 3000",
+    "build": "echo 'Static app ready for Vercel deployment.'"
+  },
+  "dependencies": {
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}
