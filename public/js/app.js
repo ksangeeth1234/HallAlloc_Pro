@@ -49,6 +49,8 @@ const state = {
 
 // DOM Element References
 const elements = {
+  appLoader: document.getElementById('appLoader'),
+  appLoaderText: document.getElementById('appLoaderText'),
   sidebar: document.getElementById('sidebar'),
   mobileToggle: document.getElementById('mobileToggle'),
   navItems: document.querySelectorAll('.nav-item'),
@@ -120,6 +122,18 @@ const elements = {
 
 /* ── App Initialization ────────────────────────────────────────────────── */
 
+function setGlobalLoading(isLoading, message = 'Loading lecture hall analytics...') {
+  if (!elements.appLoader) return;
+
+  if (isLoading) {
+    elements.appLoaderText.textContent = message;
+    elements.appLoader.classList.remove('hidden');
+    return;
+  }
+
+  elements.appLoader.classList.add('hidden');
+}
+
 async function init() {
   bindNavigation();
   bindFileUpload();
@@ -127,8 +141,11 @@ async function init() {
   bindDetailedFilters();
   bindReportActions();
 
+  setGlobalLoading(true, 'Loading HallAlloc Pro...');
+
   // Load sample default workbook if present in server
   await loadDefaultSampleWorkbook();
+  setGlobalLoading(false);
 }
 
 /**
@@ -136,6 +153,7 @@ async function init() {
  */
 async function loadDefaultSampleWorkbook() {
   try {
+    setGlobalLoading(true, 'Loading default workbook...');
     const response = await fetch('./Lecture_Hall_Allocation_for_ongoing_programs.xlsx');
     if (!response.ok) return;
 
@@ -238,6 +256,7 @@ async function handleFileSelection(file) {
 
   showUploadFeedback('', 'hidden');
   elements.processingLoader.classList.remove('hidden');
+  setGlobalLoading(true, `Processing ${file.name}...`);
 
   try {
     await processUploadedFile(file);
@@ -249,6 +268,7 @@ async function handleFileSelection(file) {
     showUploadFeedback(`Error reading Excel file: ${err.message}`, 'danger');
   } finally {
     elements.processingLoader.classList.add('hidden');
+    setGlobalLoading(false);
   }
 }
 

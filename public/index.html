@@ -17,13 +17,22 @@
   <link rel="stylesheet" href="./css/style.css" />
 </head>
 <body>
+  <div class="app-loader" id="appLoader" aria-live="polite">
+    <div class="loader-card">
+      <img src="./assets/images.jpg" alt="HallAlloc Pro logo" class="loader-logo" />
+      <div class="loader-text-wrap">
+        <h2>HallAlloc Pro</h2>
+        <p id="appLoaderText">Loading lecture hall analytics...</p>
+      </div>
+      <div class="loader-bar"><span></span></div>
+    </div>
+  </div>
+
   <div class="app-shell">
     <!-- Sidebar Navigation -->
     <aside class="sidebar" id="sidebar">
       <div class="brand">
-        <div class="brand-icon">
-          <i class="fa-solid fa-building-columns"></i>
-        </div>
+        <img src="./assets/images.jpg" alt="HallAlloc Pro logo" class="brand-logo" />
         <div class="brand-text">
           <span class="brand-title">HallAlloc Pro</span>
           <span class="brand-subtitle">Reporting & Allocation</span>

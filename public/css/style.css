@@ -64,6 +64,83 @@ html, body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* App Loading Overlay */
+.app-loader {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.78);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  transition: opacity 0.35s ease, visibility 0.35s ease;
+}
+
+.app-loader.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.loader-card {
+  width: min(92vw, 420px);
+  padding: 28px 24px 22px;
+  border-radius: 22px;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  box-shadow: 0 25px 60px rgba(15, 23, 42, 0.45);
+  text-align: center;
+  color: var(--sidebar-text);
+}
+
+.loader-logo {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 16px;
+  display: block;
+  border-radius: 18px;
+  object-fit: cover;
+  object-position: center;
+  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.35);
+  background: linear-gradient(135deg, #1d4ed8, #2563eb);
+  padding: 4px;
+}
+
+.loader-text-wrap h2 {
+  font-size: 1.4rem;
+  margin-bottom: 6px;
+}
+
+.loader-text-wrap p {
+  color: rgba(226, 232, 240, 0.8);
+  font-size: 0.8rem;
+}
+
+.loader-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(148, 163, 184, 0.18);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 20px;
+}
+
+.loader-bar span {
+  display: block;
+  width: 38%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #60a5fa, #2563eb, #a78bfa);
+  animation: loadingPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes loadingPulse {
+  0% { transform: translateX(-15%); opacity: 0.6; }
+  50% { transform: translateX(120%); opacity: 1; }
+  100% { transform: translateX(260%); opacity: 0.6; }
+}
+
 /* Layout Shell */
 .app-shell {
   display: flex;
@@ -89,6 +166,18 @@ html, body {
   gap: 12px;
   padding: 0 8px 24px 8px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.brand-logo {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  flex-shrink: 0;
+  object-fit: cover;
+  object-position: center;
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.3);
+  background: linear-gradient(135deg, #1d4ed8, #2563eb);
+  padding: 3px;
 }
 
 .brand-icon {
@@ -774,21 +863,56 @@ html, body {
 
 /* Responsive Media Queries */
 @media (max-width: 1024px) {
+  .app-shell {
+    display: block;
+  }
+
   .sidebar {
     position: fixed;
-    left: -260px;
+    left: -280px;
     top: 0;
     bottom: 0;
+    width: min(280px, 80vw);
+    box-shadow: 0 30px 60px rgba(15, 23, 42, 0.3);
   }
+
   .sidebar.open {
     left: 0;
   }
+
   .mobile-toggle {
     display: block;
   }
-  .search-form-grid {
-    grid-template-columns: repeat(2, 1fr);
+
+  .topbar {
+    padding: 0 20px;
+    height: auto;
+    min-height: 70px;
+    gap: 14px;
+    flex-wrap: wrap;
+    padding-top: 12px;
+    padding-bottom: 12px;
   }
+
+  .topbar-left,
+  .topbar-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .topbar-right {
+    flex-wrap: wrap;
+  }
+
+  .quick-file-info {
+    flex: 1 1 180px;
+    min-width: 0;
+  }
+
+  .search-form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .grid-2-col {
     grid-template-columns: 1fr;
   }
@@ -796,16 +920,88 @@ html, body {
 
 @media (max-width: 640px) {
   .topbar {
-    padding: 0 16px;
+    padding: 12px 14px;
   }
+
+  .topbar-left {
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .page-title {
+    font-size: 18px;
+  }
+
+  .page-subtitle {
+    max-width: 100%;
+  }
+
+  .topbar-right {
+    align-items: stretch;
+  }
+
+  .quick-file-info,
+  .topbar-right .btn {
+    width: 100%;
+  }
+
   .main-content {
     padding: 16px;
   }
+
+  .card-header,
+  .report-top-bar,
+  .flex-between,
+  .table-pagination {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .table-actions {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-input {
+    width: 100%;
+  }
+
   .search-form-grid {
     grid-template-columns: 1fr;
   }
+
   .report-meta-grid, .report-metrics-row {
     grid-template-columns: 1fr;
+  }
+
+  .report-card {
+    padding: 18px 14px;
+  }
+
+  .report-title-area {
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .report-actions {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .report-actions .btn {
+    width: 100%;
+  }
+
+  .data-table th,
+  .data-table td,
+  .report-table th,
+  .report-table td {
+    padding-left: 10px;
+    padding-right: 10px;
   }
 }
 
