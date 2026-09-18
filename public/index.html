@@ -161,6 +161,20 @@
             </div>
             <div class="card-body">
               <form id="searchForm" class="search-form-grid" onsubmit="event.preventDefault();">
+                <fieldset class="search-mode-group">
+                  <legend><i class="fa-solid fa-route"></i> Search Mode</legend>
+                  <div class="search-mode-switch">
+                    <label class="search-mode-option">
+                      <input type="radio" name="searchMode" value="point" checked />
+                      <span><i class="fa-solid fa-location-crosshairs"></i> Selected time for selected day</span>
+                    </label>
+                    <label class="search-mode-option">
+                      <input type="radio" name="searchMode" value="range" />
+                      <span><i class="fa-solid fa-arrows-left-right-to-line"></i> Time range with date range</span>
+                    </label>
+                  </div>
+                </fieldset>
+
                 <div class="form-group">
                   <label for="searchDay"><i class="fa-solid fa-calendar-day"></i> Day of Week</label>
                   <select id="searchDay" class="form-control">
@@ -179,6 +193,26 @@
                   <input type="time" id="searchTime" class="form-control" value="10:15" />
                 </div>
 
+                <div class="form-group range-only">
+                  <label for="searchDateFrom"><i class="fa-solid fa-calendar-plus"></i> Date From</label>
+                  <input type="date" id="searchDateFrom" class="form-control" />
+                </div>
+
+                <div class="form-group range-only">
+                  <label for="searchDateTo"><i class="fa-solid fa-calendar-minus"></i> Date To</label>
+                  <input type="date" id="searchDateTo" class="form-control" />
+                </div>
+
+                <div class="form-group range-only">
+                  <label for="searchTimeFrom"><i class="fa-solid fa-clock-rotate-left"></i> Time From</label>
+                  <input type="time" id="searchTimeFrom" class="form-control" />
+                </div>
+
+                <div class="form-group range-only">
+                  <label for="searchTimeTo"><i class="fa-solid fa-clock-rotate-right"></i> Time To</label>
+                  <input type="time" id="searchTimeTo" class="form-control" />
+                </div>
+
                 <div class="form-group">
                   <label for="searchMonth"><i class="fa-solid fa-calendar-check"></i> Month Filter</label>
                   <select id="searchMonth" class="form-control">
@@ -193,6 +227,25 @@
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+
+          <!-- Cinema-style hall occupancy board -->
+          <div class="card occupancy-board-card">
+            <div class="card-header occupancy-board-header">
+              <div>
+                <h3><i class="fa-solid fa-border-all"></i> Hall Occupancy Board</h3>
+                <span class="subtitle">Live seat-map style view for the selected date and time range</span>
+              </div>
+              <div class="occupancy-legend" aria-label="Occupancy legend">
+                <span><i class="legend-dot free"></i> Free</span>
+                <span><i class="legend-dot occupied"></i> Occupied</span>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="occupancy-board" id="occupancyBoard">
+                <div class="empty-state">Execute search above to view the hall occupancy board.</div>
+              </div>
             </div>
           </div>
 
@@ -409,8 +462,20 @@
                   <span class="meta-value" id="repSelectedDay">Sunday</span>
                 </div>
                 <div class="meta-item">
+                  <span class="meta-label">Search Mode:</span>
+                  <span class="meta-value" id="repSearchMode">Selected time</span>
+                </div>
+                <div class="meta-item">
                   <span class="meta-label">Selected Time:</span>
                   <span class="meta-value" id="repSelectedTime">10:15 AM</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">Date Range:</span>
+                  <span class="meta-value" id="repSelectedDateRange">Any Date</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">Time Range:</span>
+                  <span class="meta-value" id="repSelectedTimeRange">Target time</span>
                 </div>
                 <div class="meta-item">
                   <span class="meta-label">Month Filter:</span>

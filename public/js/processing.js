@@ -125,11 +125,27 @@ function extractHallList(searchRows) {
  *   First match wins (identical to VBA "Exit For").
  *
  * @param {{ classRows: any[][], halls: {hall:string,roomType:string}[] }} bundle
- * @param {{ day:string, time:string, month:string, searchMinutes:number }} params
+ * @param {{ mode:string, day:string, time:string, month:string, searchMinutes:number, dateFrom:string, dateTo:string, timeFrom:string, timeTo:string }} params
  */
 function runHallSearchLogic(bundle, params) {
   const { classRows, halls } = bundle;
-  const { day, time, month, searchMinutes } = params;
+  const { mode, day, time, month, searchMinutes, dateFrom, dateTo, timeFrom, timeTo } = params;
+  const rangeMode = mode === 'range';
+  const resultDay = rangeMode ? 'All days' : day;
+
+  const selectedDateFrom = rangeMode && dateFrom ? toDate(dateFrom) : null;
+  const selectedDateTo = rangeMode && dateTo ? toDate(dateTo) : null;
+  if (selectedDateFrom) selectedDateFrom.setHours(0, 0, 0, 0);
+  if (selectedDateTo) selectedDateTo.setHours(23, 59, 59, 999);
+  const rangeFromMinutes = parseTimeToMinutes(timeFrom);
+  const rangeToMinutes = parseTimeToMinutes(timeTo);
+  const useTimeRange = rangeMode && Boolean(timeFrom && timeTo) && !isNaN(rangeFromMinutes) && !isNaN(rangeToMinutes);
+  const dateRangeLabel = selectedDateFrom || selectedDateTo
+    ? `${dateFrom || 'Any date'} - ${dateTo || 'Any date'}`
+    : 'Any Date';
+  const timeRangeLabel = useTimeRange
+    ? `${timeFrom} - ${timeTo}`
+    : `Target time: ${time || 'Any time'}`;
 
   /* Month filter setup */
   const useMonth  = Boolean(month && month !== '');
@@ -148,20 +164,29 @@ function runHallSearchLogic(bundle, params) {
       const dDay  = safe(row[COL.WEEKDAY]);
       const dHall = safe(row[COL.HALL]);
       if (!dDay || !dHall) continue;
-      if (dDay !== day || dHall !== hall) continue;
+      if ((!rangeMode && dDay !== day) || dHall !== hall) continue;
 
       // Recompute status from dates (same as Excel column S formula)
       const sd = toDate(row[COL.START_DATE]);
       const ed = toDate(row[COL.END_DATE]);
       const status = computeClassStatus(sd, ed);
-      if (status !== 'Ongoing' && status !== 'Upcoming') continue;
+      const hasDateRange = rangeMode;
+      if (!hasDateRange && status !== 'Ongoing' && status !== 'Upcoming') continue;
+
+      if (hasDateRange && (!sd || !ed ||
+        (selectedDateFrom && ed < selectedDateFrom) ||
+        (selectedDateTo && sd > selectedDateTo))) continue;
 
       const dStart = toNum(row[COL.START_MIN]);
       const dEnd   = toNum(row[COL.END_MIN]);
       if (isNaN(dStart) || isNaN(dEnd)) continue;
 
-      // Time overlap check: searchMinutes >= Start AND searchMinutes < End
-      if (searchMinutes >= dStart && searchMinutes < dEnd) {
+      // A range matches when the class interval overlaps it. Without a range,
+      // preserve the original point-in-time search behavior.
+      const timeMatches = useTimeRange
+        ? rangeFromMinutes < dEnd && rangeToMinutes > dStart
+        : searchMinutes >= dStart && searchMinutes < dEnd;
+      if (timeMatches) {
         // Month overlap: classStart <= monthEnd AND classEnd >= monthStart
         let monthOk = true;
         if (useMonth && sd && ed) monthOk = sd <= monthEnd && ed >= monthStart;
@@ -182,7 +207,7 @@ function runHallSearchLogic(bundle, params) {
       occBy:   found ? occBy   : '',
       occMode: found ? occMode : '',
       occTime: found ? occTime : '',
-      day, month: monthLabel, time,
+      day: resultDay, month: monthLabel, time, mode,
     };
   });
 
@@ -192,7 +217,7 @@ function runHallSearchLogic(bundle, params) {
 
   return {
     rows: results,
-    summary: { totalHalls: results.length, freeHalls: free, occupiedHalls: occ, utilization: util, monthLabel, day, time, month },
+    summary: { totalHalls: results.length, freeHalls: free, occupiedHalls: occ, utilization: util, monthLabel, day: resultDay, time, mode, dateRangeLabel, timeRangeLabel },
   };
 }
 
